@@ -1,0 +1,143 @@
+Veri seti görselleştirirken işlenecek verinin nasıl olduğu ne işe yaradığı çok iyi bir şekilde belirtilmelidir.
+Veri setini işleyecekken kullanılacak kütüphaneler seaborn, numpy, pandastır.
+titanic veri seti işlerken kullanılacak örneği inceleyelim : 
+
+
+import numpy as np
+import seaborn as sns 
+import pandas as pd
+import matplodlib.pyplot as plt
+import timeit 
+
+titanic = sns.load_dataset('titanic')
+
+titanic.info()
+
+
+
+PS C:\Users\metec\OneDrive\Masaüstü\Workspace\DEEP LEARNİNG\Titanic veri seti görselleştirme> conda ac
+tivate base
+PS C:\Users\metec\OneDrive\Masaüstü\Workspace\DEEP LEARNİNG\Titanic veri seti görselleştirme> & C:/Use
+rs/metec/anaconda3/python.exe "c:/Users/metec/OneDrive/Masaüstü/Workspace/DEEP LEARNİNG/Titanic veri s
+eti görselleştirme/titanic.py"
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 891 entries, 0 to 890
+Data columns (total 15 columns):
+ #   Column       Non-Null Count  Dtype
+---  ------       --------------  -----
+ 0   survived     891 non-null    int64
+ 1   pclass       891 non-null    int64
+ 2   sex          891 non-null    object
+ 3   age          714 non-null    float64
+ 4   sibsp        891 non-null    int64
+ 5   parch        891 non-null    int64
+ 6   fare         891 non-null    float64
+ 7   embarked     889 non-null    object
+ 8   class        891 non-null    category
+ 9   who          891 non-null    object
+ 10  adult_male   891 non-null    bool
+ 11  deck         203 non-null    category
+ 12  embark_town  889 non-null    object
+ 13  alive        891 non-null    object
+ 14  alone        891 non-null    bool
+dtypes: bool(2), category(2), float64(2), int64(4), object(5)
+memory usage: 80.7+ KB
+PS C:\Users\metec\OneDrive\Masaüstü\Workspace\DEEP LEARNİNG\Titanic veri seti görselleştirme>
+
+
+Yukarıda yapılan işlem seaborn kullanılarak titanic veri setinin bilgisayara indirilmesi ve titanic.info() kullanılarak veri setinin özelliklerinin görülmesidir.
+Şimdi ise titanic veri setinin içerisindeki belli bir bölümü tablo halinde bastırmayı göreceğiz:
+
+
+
+titanic[
+    (titanic.sex == 'female')
+    & (titanic['class'].isin(['First','Third']))
+    & (titanic.age > 30)
+    & (titanic.survived == 0)
+]
+
+
+
+
+
+
+survived	pclass	sex	age	sibsp	parch	fare	embarked	class	who	adult_male	deck	embark_town	alive	alone
+18	0	3	female	31.0	1	0	18.0000	S	Third	woman	False	NaN	Southampton	no	False
+40	0	3	female	40.0	1	0	9.4750	S	Third	woman	False	NaN	Southampton	no	False
+132	0	3	female	47.0	1	0	14.5000	S	Third	woman	False	NaN	Southampton	no	False
+167	0	3	female	45.0	1	4	27.9000	S	Third	woman	False	NaN	Southampton	no	False
+177	0	1	female	50.0	0	0	28.7125	C	First	woman	False	C	Cherbourg	no	True
+254	0	3	female	41.0	0	2	20.2125	S	Third	woman	False	NaN	Southampton	no	False
+276	0	3	female	45.0	0	0	7.7500	S	Third	woman	False	NaN	Southampton	no	True
+362	0	3	female	45.0	0	1	14.4542	C	Third	woman	False	NaN	Cherbourg	no	False
+396	0	3	female	31.0	0	0	7.8542	S	Third	woman	False	NaN	Southampton	no	True
+503	0	3	female	37.0	0	0	9.5875	S	Third	woman	False	NaN	Southampton	no	True
+610	0	3	female	39.0	1	5	31.2750	S	Third	woman	False	NaN	Southampton	no	False
+638	0	3	female	41.0	0	5	39.6875	S	Third	woman	False	NaN	Southampton	no	False
+657	0	3	female	32.0	1	1	15.5000	Q	Third	woman	False	NaN	Queenstown	no	False
+678	0	3	female	43.0	1	6	46.9000	S	Third	woman	False	NaN	Southampton	no	False
+736	0	3	female	48.0	1	3	34.3750	S	Third	woman	False	NaN	Southampton	no	False
+767	0	3	female	30.5	0	0	7.7500	Q	Third	woman	False	NaN	Queenstown	no	True
+885	0	3	female	39.0	0	5	29.1250	Q	Third	woman	False	NaN	Queenstown	no	False
+​
+
+
+Yukarıda belirtilen cinsiyet kadın ,  yaş sıkalası 30 ve üzeri, yaşama durumu da olumsuz (ex) şeklinbde bastırıldığında veri setinin belli bir bölümü bu şekilde bastırılıyor.
+Veride belirtilen dğier özellikleri de belirleyebiliriz. Örneğin veri içerisindeki kişilerin yaşadığı şehirleri de belirleyebiliriz.
+
+
+
+towns_dic = {
+    'name' : ['Southampton','Cherbourg','Queenstown' , 'Montevideo'],
+    'country' : ['United Kingdom', 'France', 'United Kingdom' ,'Uruguay'] , 
+    'population' : [236900, 37121, 12347, 130500],
+    'age': [np.random.randint(500,1000) for _ in range(4)]
+}
+towns_df =pd.DataFrame(towns_dic)
+
+
+(titanic.merge(
+    towns_df ,
+    left_on = 'embark_town',right_on = 'name' ,
+    how = 'left' ,
+    indicator = True ,
+    suffixes = ('_passenger' , '_city')
+)).head()
+    
+#head takes the last n elements of the DataFrame 
+
+
+
+
+	survived	pclass	sex	age_passenger	sibsp	parch	fare	embarked	class	who	adult_male	deck	embark_town	alive	alone	name	country	population	age_city	_merge
+0	0	3	male	22.0	1	0	7.2500	S	Third	man	True	NaN	Southampton	no	False	Southampton	United Kingdom	236900.0	505.0	both
+1	1	1	female	38.0	1	0	71.2833	C	First	woman	False	C	Cherbourg	yes	False	Cherbourg	France	37121.0	790.0	both
+2	1	3	female	26.0	0	0	7.9250	S	Third	woman	False	NaN	Southampton	yes	True	Southampton	United Kingdom	236900.0	505.0	both
+3	1	1	female	35.0	1	0	53.1000	S	First	woman	False	C	Southampton	yes	False	Southampton	United Kingdom	236900.0	505.0	both
+4	0	3	male	35.0	0	0	8.0500	S	Third	man	True	NaN	Southampton	no	True	Southampton	United Kingdom	236900.0	505.0	both
+
+
+
+Yukarıdaki tabloda görüldüğü gibi yolcuların nereden bindikleri , hangi class da yolculuk ettikleri , biletlerine ödedikleri fiyatlar gibi bilgilere de özel olarak erişebilmekteyiz.
+Ayrıca gemideki yolcuların yaş dağılımını gösteren bir grafik de çizdirebilmekteyiz.
+
+
+
+
+sns.distplot(titanic.age.dropna())
+plt.show()
+
+
+Bu kod önümüze bir tablo getirmekte text dosyasında görüntülenememektedir.
+Buna benzer olacak şekilde bakmak istediğimiz herhangi bir bilgiyi tablo halinme getirebilmekteyiz.
+
+
+
+
+
+
+
+
+
+
